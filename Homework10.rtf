@@ -1,0 +1,785 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1344\cocoasubrtf720
+{\fonttbl\f0\fnil\fcharset0 Monaco;}
+{\colortbl;\red255\green255\blue255;\red63\green95\blue191;\red127\green159\blue191;\red127\green0\blue85;
+\red63\green127\blue95;\red0\green0\blue192;\red106\green62\blue62;\red127\green127\blue159;\red42\green0\blue255;
+}
+\margl1440\margr1440\vieww12540\viewh13560\viewkind1
+\deftab720
+\pard\pardeftab720
+
+\f0\fs22 \cf2 /**\cf0 \
+\cf2  * Homework 10\cf0 \
+\cf2  * \cf0 \
+\cf2  * \cf3 @authors\cf2  \ul Jacob\ulnone  \ul Hennessy\ulnone , Mark \ul Allen\ulnone  \ul Weiss\ulnone , and \ul Renee\ulnone  McCauley\cf0 \
+\cf2  * \cf3 @since\cf2  April 19 2013\cf0 \
+\cf2  * \cf0 \
+\cf2  * A class that contains several sorting routines,\cf0 \
+\cf2  * implemented as static methods.\cf0 \
+\cf2  * Arrays are rearranged with smallest item first,\cf0 \
+\cf2  * using compareTo.\cf0 \
+\cf2  * \cf0 \
+\cf2  */\cf0 \
+\pard\pardeftab720
+\cf4 package\cf0  edu.cofc.csci230;\
+\
+\cf4 public\cf0  \cf4 class\cf0  Sort\
+\{\
+	\cf5 //Creating a global constant for the size of the arrays used.\cf0 \
+	\cf4 static\cf0  \cf4 final\cf0  \cf4 int\cf0  \cf6 ARRAY_SIZE\cf0 = 25000;\
+	\cf5 //Creating a clock variable that will hold the time\cf0 \
+	\cf4 public\cf0  \cf4 long\cf0  \cf6 startTime\cf0 ;\
+	\cf4 public\cf0  \cf4 long\cf0  \cf6 stopTime\cf0 ;\
+	\cf4 public\cf0  \cf4 long\cf0  \cf6 totalTime\cf0 ;\
+	\cf5 //Creating global variables\cf0 \
+	\cf4 private\cf0  \cf4 static\cf0  \cf4 int\cf0  \cf6 assignCount\cf0 ;\
+	\cf4 private\cf0  \cf4 static\cf0  \cf4 int\cf0  \cf6 compareCount\cf0 ;\
+	\
+	\cf2 /**\cf0 \
+\pard\pardeftab720
+\cf2 	 * TimeInMS()\cf0 \
+\cf2 	 * \cf3 @return\cf2  record, a \ul millisec\ulnone  representation of the System clock\cf0 \
+\cf2 	 */\cf0 \
+	\cf4 public\cf0  \cf4 static\cf0  \cf4 long\cf0  TimeInMs() \{\
+		\
+		\cf5 //Taking java's system clock and using it for a deltaT value\cf0 \
+		\cf4 long\cf0  \cf7 record\cf0  = System.currentTimeMillis();\
+		\
+		\cf4 return\cf0  \cf7 record\cf0 ;\
+	\}\
+	\
+    \cf2 /**\cf0 \
+\cf2      * Simple insertion sort.\cf0 \
+\cf2      * \cf3 @param\cf2  a an array of Comparable items.\cf0 \
+\cf2      */\cf0 \
+    \cf4 public\cf0  \cf4 static\cf0  <AnyType \cf4 extends\cf0  Comparable<? \cf4 super\cf0  AnyType>>\
+    \cf4 void\cf0  insertionSort( AnyType [ ] \cf7 a\cf0 , \cf4 int\cf0  \cf7 assCount\cf0 , \cf4 int\cf0  \cf7 compCount\cf0  )\
+    \{\
+        \cf4 int\cf0  \cf7 j\cf0 ;\
+\
+        \cf4 for\cf0 ( \cf4 int\cf0  \cf7 p\cf0  = 1; \cf7 p\cf0  < \cf7 a\cf0 .\cf6 length\cf0 ; \cf7 p\cf0 ++ )\
+        \{\
+            AnyType \cf7 tmp\cf0  = \cf7 a\cf0 [ \cf7 p\cf0  ];\
+            Sort.setAssignCount(\cf7 assCount\cf0 ++);\
+			\cf7 j\cf0  = \cf7 p\cf0 ;\
+            \cf4 while\cf0 (\cf7 j\cf0  > 0 && \cf7 tmp\cf0 .compareTo( \cf7 a\cf0 [ \cf7 j\cf0  - 1 ] ) < 0 ) \{\
+            	Sort.setCompareCount(\cf7 compCount\cf0 ++);\
+                \cf7 a\cf0 [ \cf7 j\cf0  ] = \cf7 a\cf0 [ \cf7 j\cf0  - 1 ];\
+                Sort.setAssignCount(\cf7 assCount\cf0 ++);\
+			    \cf7 j\cf0 --;\
+			\}\
+            \cf7 a\cf0 [ \cf7 j\cf0  ] = \cf7 tmp\cf0 ;\
+            Sort.setAssignCount(\cf7 assCount\cf0 ++);\
+        \}\
+    \}\
+\
+    \cf2 /**\cf0 \
+\cf2      * \ul Shellsort\ulnone , using Shell's (poor) increments.\cf0 \
+\cf2      * \cf3 @param\cf2  a an array of Comparable items.\cf0 \
+\cf2      */\cf0 \
+    \cf4 public\cf0  \cf4 static\cf0  <AnyType \cf4 extends\cf0  Comparable<? \cf4 super\cf0  AnyType>>\
+    \cf4 void\cf0  shellsort( AnyType [ ] \cf7 a\cf0 , \cf4 int\cf0  \cf7 assCount\cf0 , \cf4 int\cf0  \cf7 compCount\cf0  )\
+    \{\
+        \cf4 int\cf0  \cf7 j\cf0 ;\
+\
+        \cf4 for\cf0 ( \cf4 int\cf0  \cf7 gap\cf0  = \cf7 a\cf0 .\cf6 length\cf0  / 2; \cf7 gap\cf0  > 0; \cf7 gap\cf0  /= 2 ) \{\
+            \cf4 for\cf0 ( \cf4 int\cf0  \cf7 i\cf0  = \cf7 gap\cf0 ; \cf7 i\cf0  < \cf7 a\cf0 .\cf6 length\cf0 ; \cf7 i\cf0 ++ )\
+            \{\
+                AnyType \cf7 tmp\cf0  = \cf7 a\cf0 [ \cf7 i\cf0  ];\
+                Sort.setAssignCount(\cf7 assCount\cf0 ++);\
+                \cf4 for\cf0 ( \cf7 j\cf0  = \cf7 i\cf0 ; \cf7 j\cf0  >= \cf7 gap\cf0  &&\
+                            \cf7 tmp\cf0 .compareTo( \cf7 a\cf0 [ \cf7 j\cf0  - \cf7 gap\cf0  ] ) < 0; \cf7 j\cf0  -= \cf7 gap\cf0  ) \{\
+                	Sort.setCompareCount(\cf7 compCount\cf0 ++);\
+                    \cf7 a\cf0 [ \cf7 j\cf0  ] = \cf7 a\cf0 [ \cf7 j\cf0  - \cf7 gap\cf0  ];\
+                    Sort.setAssignCount(\cf7 assCount\cf0 ++);\
+                \}\
+                \cf7 a\cf0 [ \cf7 j\cf0  ] = \cf7 tmp\cf0 ;\
+                Sort.setAssignCount(\cf7 assCount\cf0 ++);\
+            \}\
+        \}\
+    \}\
+\
+\
+    \cf2 /**\cf0 \
+\cf2      * Internal method for \ul heapsort\ulnone .\cf0 \
+\cf2      * \cf3 @param\cf2  i the index of an item in the heap.\cf0 \
+\cf2      * \cf3 @return\cf2  the index of the left child.\cf0 \
+\cf2      */\cf0 \
+    \cf4 private\cf0  \cf4 static\cf0  \cf4 int\cf0  leftChild( \cf4 int\cf0  \cf7 i\cf0 , \cf4 int\cf0  \cf7 assCount\cf0 , \cf4 int\cf0  \cf7 compCount\cf0  )\
+    \{\
+        \cf4 return\cf0  2 * \cf7 i\cf0  + 1;\
+    \}\
+    \
+    \cf2 /**\cf0 \
+\cf2      * Internal method for \ul heapsort\ulnone  that is used in deleteMax and buildHeap.\cf0 \
+\cf2      * \cf3 @param\cf2  a an array of Comparable items.\cf0 \
+\cf2      * \cf3 @index\cf2  i the position from which to percolate down.\cf0 \
+\cf2      * \cf3 \ul \ulc3 @int\cf2 \ulnone  n the logical size of the binary heap.\cf0 \
+\cf2      */\cf0 \
+    \cf4 private\cf0  \cf4 static\cf0  <AnyType \cf4 extends\cf0  Comparable<? \cf4 super\cf0  AnyType>>\
+    \cf4 void\cf0  percDown( AnyType [ ] \cf7 a\cf0 , \cf4 int\cf0  \cf7 i\cf0 , \cf4 int\cf0  \cf7 n\cf0 , \cf4 int\cf0  \cf7 assCount\cf0 , \cf4 int\cf0  \cf7 compCount\cf0  )\
+    \{\
+        \cf4 int\cf0  \cf7 child\cf0 ;\
+        Sort.setAssignCount(\cf7 assCount\cf0 ++);\
+        AnyType \cf7 tmp\cf0 ;\
+        Sort.setAssignCount(\cf7 assCount\cf0 ++);\
+\
+        \cf4 for\cf0 ( \cf7 tmp\cf0  = \cf7 a\cf0 [ \cf7 i\cf0  ]; leftChild( \cf7 i\cf0 , \cf7 assCount\cf0 , \cf7 compCount\cf0  ) < \cf7 n\cf0 ; \cf7 i\cf0  = \cf7 child\cf0  )\
+        \{\
+        	Sort.setCompareCount(\cf7 compCount\cf0 ++);\
+            \cf7 child\cf0  = leftChild( \cf7 i\cf0 , \cf7 assCount\cf0 , \cf7 compCount\cf0  );\
+            Sort.setAssignCount(\cf7 assCount\cf0 ++);\
+            \cf4 if\cf0 ( \cf7 child\cf0  != \cf7 n\cf0  - 1 && \cf7 a\cf0 [ \cf7 child\cf0  ].compareTo( \cf7 a\cf0 [ \cf7 child\cf0  + 1 ] ) < 0 )\{\
+            	Sort.setCompareCount(\cf7 compCount\cf0  + 2);\
+                \cf7 child\cf0 ++;\
+                Sort.setAssignCount(\cf7 assCount\cf0 ++);\
+                \}\
+            \cf4 if\cf0 ( \cf7 tmp\cf0 .compareTo( \cf7 a\cf0 [ \cf7 child\cf0  ] ) < 0 ) \{\
+            	Sort.setCompareCount(\cf7 compCount\cf0 ++);\
+                \cf7 a\cf0 [ \cf7 i\cf0  ] = \cf7 a\cf0 [ \cf7 child\cf0  ];\
+                Sort.setAssignCount(\cf7 assCount\cf0 ++);\
+            \}\
+            \cf4 else\cf0 \
+                \cf4 break\cf0 ;\
+        \}\
+        \cf7 a\cf0 [ \cf7 i\cf0  ] = \cf7 tmp\cf0 ;\
+        Sort.setAssignCount(\cf7 assCount\cf0 ++);\
+    \}\
+    \
+    \cf2 /**\cf0 \
+\cf2      * Standard \ul heapsort\ulnone .\cf0 \
+\cf2      * \cf3 @param\cf2  a an array of Comparable items.\cf0 \
+\cf2      */\cf0 \
+    \cf4 public\cf0  \cf4 static\cf0  <AnyType \cf4 extends\cf0  Comparable<? \cf4 super\cf0  AnyType>>\
+    \cf4 void\cf0  heapsort( AnyType [ ] \cf7 a\cf0 , \cf4 int\cf0  \cf7 assCount\cf0 , \cf4 int\cf0  \cf7 compCount\cf0  )\
+    \{\
+        \cf4 for\cf0 ( \cf4 int\cf0  \cf7 i\cf0  = \cf7 a\cf0 .\cf6 length\cf0  / 2 - 1; \cf7 i\cf0  >= 0; \cf7 i\cf0 -- ) \{\
+            percDown( \cf7 a\cf0 , \cf7 i\cf0 , \cf7 a\cf0 .\cf6 length\cf0 , \cf7 assCount\cf0 , \cf7 compCount\cf0  );\
+        \}\
+        \cf4 for\cf0 ( \cf4 int\cf0  \cf7 i\cf0  = \cf7 a\cf0 .\cf6 length\cf0  - 1; \cf7 i\cf0  > 0; \cf7 i\cf0 -- )\
+        \{\
+        	Sort.setCompareCount(\cf7 compCount\cf0 ++);\
+            swapReferences( \cf7 a\cf0 , 0, \cf7 i\cf0 , \cf7 assCount\cf0 , \cf7 compCount\cf0  );                \cf5 /* deleteMax */\cf0 \
+            percDown( \cf7 a\cf0 , 0, \cf7 i\cf0 , \cf7 assCount\cf0 , \cf7 compCount\cf0  );\
+        \}\
+    \}\
+\
+\
+    \cf2 /**\cf0 \
+\cf2      * \ul Mergesort\ulnone  algorithm.\cf0 \
+\cf2      * \cf3 @param\cf2  a an array of Comparable items.\cf0 \
+\cf2      */\cf0 \
+    \cf4 public\cf0  \cf4 static\cf0  <AnyType \cf4 extends\cf0  Comparable<? \cf4 super\cf0  AnyType>>\
+    \cf4 void\cf0  mergeSort( AnyType [ ] \cf7 a\cf0 , \cf4 int\cf0  \cf7 assCount\cf0 , \cf4 int\cf0  \cf7 compCount\cf0  )\
+    \{\
+        AnyType [ ] \cf7 tmpArray\cf0  = \ul (AnyType[]) \cf4 \ulc4 new\cf0 \ulc0  Comparable[ \cf7 \ulc7 a\cf0 \ulc0 .\cf6 \ulc6 length\cf0 \ulc0  ]\ulnone ;\
+        Sort.setAssignCount(\cf7 assCount\cf0 ++);\
+\
+        mergeSort( \cf7 a\cf0 , \cf7 tmpArray\cf0 , 0, \cf7 a\cf0 .\cf6 length\cf0  - 1, \cf7 assCount\cf0 , \cf7 compCount\cf0  );\
+    \}\
+\
+    \cf2 /**\cf0 \
+\cf2      * Internal method that makes recursive calls.\cf0 \
+\cf2      * \cf3 @param\cf2  a an array of Comparable items.\cf0 \
+\cf2      * \cf3 @param\cf2  tmpArray an array to place the merged result.\cf0 \
+\cf2      * \cf3 @param\cf2  left the left\cf8 -\cf2 most index of the \ul subarray\ulnone .\cf0 \
+\cf2      * \cf3 @param\cf2  right the right\cf8 -\cf2 most index of the \ul subarray\ulnone .\cf0 \
+\cf2      */\cf0 \
+    \cf4 private\cf0  \cf4 static\cf0  <AnyType \cf4 extends\cf0  Comparable<? \cf4 super\cf0  AnyType>>\
+    \cf4 void\cf0  mergeSort( AnyType [ ] \cf7 a\cf0 , AnyType [ ] \cf7 tmpArray\cf0 ,\
+               \cf4 int\cf0  \cf7 left\cf0 , \cf4 int\cf0  \cf7 right\cf0 , \cf4 int\cf0  \cf7 assCount\cf0 , \cf4 int\cf0  \cf7 compCount\cf0  )\
+    \{\
+        \cf4 if\cf0 ( \cf7 left\cf0  < \cf7 right\cf0  )\
+        \{\
+        	Sort.setCompareCount(\cf7 compCount\cf0 ++);\
+            \cf4 int\cf0  \cf7 center\cf0  = ( \cf7 left\cf0  + \cf7 right\cf0  ) / 2;\
+            Sort.setAssignCount(\cf7 assCount\cf0 ++);\
+            mergeSort( \cf7 a\cf0 , \cf7 tmpArray\cf0 , \cf7 left\cf0 , \cf7 center\cf0 , \cf7 assCount\cf0 , \cf7 compCount\cf0  );\
+            mergeSort( \cf7 a\cf0 , \cf7 tmpArray\cf0 , \cf7 center\cf0  + 1, \cf7 right\cf0 , \cf7 assCount\cf0 , \cf7 compCount\cf0  );\
+            merge( \cf7 a\cf0 , \cf7 tmpArray\cf0 , \cf7 left\cf0 , \cf7 center\cf0  + 1, \cf7 right\cf0 , \cf7 assCount\cf0 , \cf7 compCount\cf0  );\
+        \}\
+    \}\
+\
+    \cf2 /**\cf0 \
+\cf2      * Internal method that merges two sorted halves of a \ul subarray\ulnone .\cf0 \
+\cf2      * \cf3 @param\cf2  a an array of Comparable items.\cf0 \
+\cf2      * \cf3 @param\cf2  tmpArray an array to place the merged result.\cf0 \
+\cf2      * \cf3 @param\cf2  leftPos the left\cf8 -\cf2 most index of the \ul subarray\ulnone .\cf0 \
+\cf2      * \cf3 @param\cf2  rightPos the index of the start of the second half.\cf0 \
+\cf2      * \cf3 @param\cf2  rightEnd the right\cf8 -\cf2 most index of the \ul subarray\ulnone .\cf0 \
+\cf2      */\cf0 \
+    \cf4 private\cf0  \cf4 static\cf0  <AnyType \cf4 extends\cf0  Comparable<? \cf4 super\cf0  AnyType>>\
+    \cf4 void\cf0  merge( AnyType [ ] \cf7 a\cf0 , AnyType [ ] \cf7 tmpArray\cf0 , \cf4 int\cf0  \cf7 leftPos\cf0 , \cf4 int\cf0  \cf7 rightPos\cf0 , \cf4 int\cf0  \cf7 rightEnd\cf0 , \cf4 int\cf0  \cf7 assCount\cf0 , \cf4 int\cf0  \cf7 compCount\cf0  )\
+    \{\
+        \cf4 int\cf0  \cf7 leftEnd\cf0  = \cf7 rightPos\cf0  - 1;\
+        Sort.setAssignCount(\cf7 assCount\cf0 ++);\
+        \cf4 int\cf0  \cf7 tmpPos\cf0  = \cf7 leftPos\cf0 ;\
+        Sort.setAssignCount(\cf7 assCount\cf0 ++);\
+        \cf4 int\cf0  \cf7 numElements\cf0  = \cf7 rightEnd\cf0  - \cf7 leftPos\cf0  + 1;\
+        Sort.setAssignCount(\cf7 assCount\cf0 ++);\
+\
+        \cf5 // Main loop\cf0 \
+        \cf4 while\cf0 ( \cf7 leftPos\cf0  <= \cf7 leftEnd\cf0  && \cf7 rightPos\cf0  <= \cf7 rightEnd\cf0  ) \{\
+        	Sort.setCompareCount(\cf7 compCount\cf0  + 2);\
+            \cf4 if\cf0 ( \cf7 a\cf0 [ \cf7 leftPos\cf0  ].compareTo( \cf7 a\cf0 [ \cf7 rightPos\cf0  ] ) <= 0 ) \{\
+            	Sort.setCompareCount(\cf7 compCount\cf0 ++);\
+                \cf7 tmpArray\cf0 [ \cf7 tmpPos\cf0 ++ ] = \cf7 a\cf0 [ \cf7 leftPos\cf0 ++ ];\
+                Sort.setAssignCount(\cf7 assCount\cf0 ++);\
+            \}\
+            \cf4 else\cf0  \{\
+            	Sort.setCompareCount(\cf7 compCount\cf0  + 2);\
+                \cf7 tmpArray\cf0 [ \cf7 tmpPos\cf0 ++ ] = \cf7 a\cf0 [ \cf7 rightPos\cf0 ++ ];\
+                Sort.setAssignCount(\cf7 assCount\cf0 ++);\
+            \}\
+        \}\
+\
+        \cf4 while\cf0 ( \cf7 leftPos\cf0  <= \cf7 leftEnd\cf0  ) \{ \
+        	Sort.setCompareCount(\cf7 compCount\cf0 ++);			\cf5 // Copy rest of first half\cf0 \
+            \cf7 tmpArray\cf0 [ \cf7 tmpPos\cf0 ++ ] = \cf7 a\cf0 [ \cf7 leftPos\cf0 ++ ];\
+            Sort.setAssignCount(\cf7 assCount\cf0 ++);\
+        \}\
+\
+        \cf4 while\cf0 ( \cf7 rightPos\cf0  <= \cf7 rightEnd\cf0  ) \{					 \cf5 // Copy rest of right half\cf0 \
+        	Sort.setCompareCount(\cf7 compCount\cf0 ++);\
+        	\cf7 tmpArray\cf0 [ \cf7 tmpPos\cf0 ++ ] = \cf7 a\cf0 [ \cf7 rightPos\cf0 ++ ];\
+            Sort.setAssignCount(\cf7 assCount\cf0 ++);\
+        \}\
+\
+        \cf5 // Copy tmpArray back\cf0 \
+        \cf4 for\cf0 ( \cf4 int\cf0  \cf7 i\cf0  = 0; \cf7 i\cf0  < \cf7 numElements\cf0 ; \cf7 i\cf0 ++, \cf7 rightEnd\cf0 -- ) \{\
+            \cf7 a\cf0 [ \cf7 rightEnd\cf0  ] = \cf7 tmpArray\cf0 [ \cf7 rightEnd\cf0  ];\
+            Sort.setAssignCount(\cf7 assCount\cf0 ++);\
+        \}\
+    \}\
+\
+    \cf2 /**\cf0 \
+\cf2      * \ul Quicksort\ulnone  algorithm.\cf0 \
+\cf2      * \cf3 @param\cf2  a an array of Comparable items.\cf0 \
+\cf2      */\cf0 \
+    \cf4 public\cf0  \cf4 static\cf0  <AnyType \cf4 extends\cf0  Comparable<? \cf4 super\cf0  AnyType>>\
+    \cf4 void\cf0  quicksort( AnyType [ ] \cf7 a\cf0 , \cf4 int\cf0  \cf7 assCount\cf0 , \cf4 int\cf0  \cf7 compCount\cf0  )\
+    \{\
+        quicksort( \cf7 a\cf0 , 0, \cf7 a\cf0 .\cf6 length\cf0  - 1, \cf7 assCount\cf0 , \cf7 compCount\cf0  );\
+    \}\
+\
+    \cf4 private\cf0  \cf4 static\cf0  \cf4 final\cf0  \cf4 int\cf0  \cf6 CUTOFF\cf0  = 3;\
+\
+    \cf2 /**\cf0 \
+\cf2      * Method to swap to elements in an array.\cf0 \
+\cf2      * \cf3 @param\cf2  a an array of objects.\cf0 \
+\cf2      * \cf3 @param\cf2  index1 the index of the first object.\cf0 \
+\cf2      * \cf3 @param\cf2  index2 the index of the second object.\cf0 \
+\cf2      */\cf0 \
+    \cf4 public\cf0  \cf4 static\cf0  <AnyType> \cf4 void\cf0  swapReferences( AnyType [ ] \cf7 a\cf0 , \cf4 int\cf0  \cf7 index1\cf0 , \cf4 int\cf0  \cf7 index2\cf0 , \cf4 int\cf0  \cf7 assCount\cf0 , \cf4 int\cf0  \cf7 compCount\cf0  )\
+    \{\
+        AnyType \cf7 tmp\cf0  = \cf7 a\cf0 [ \cf7 index1\cf0  ];\
+        Sort.setAssignCount(\cf7 assCount\cf0 ++);\
+        \cf7 a\cf0 [ \cf7 index1\cf0  ] = \cf7 a\cf0 [ \cf7 index2\cf0  ];\
+        Sort.setAssignCount(\cf7 assCount\cf0 ++);\
+        \cf7 a\cf0 [ \cf7 index2\cf0  ] = \cf7 tmp\cf0 ;\
+        Sort.setAssignCount(\cf7 assCount\cf0 ++);\
+    \}\
+\
+    \cf2 /**\cf0 \
+\cf2      * Return median of left, center, and right.\cf0 \
+\cf2      * Order these and hide the pivot.\cf0 \
+\cf2      */\cf0 \
+    \cf4 private\cf0  \cf4 static\cf0  <AnyType \cf4 extends\cf0  Comparable<? \cf4 super\cf0  AnyType>>\
+    AnyType median3( AnyType [ ] \cf7 a\cf0 , \cf4 int\cf0  \cf7 left\cf0 , \cf4 int\cf0  \cf7 right\cf0 , \cf4 int\cf0  \cf7 assCount\cf0 , \cf4 int\cf0  \cf7 compCount\cf0  )\
+    \{\
+        \cf4 int\cf0  \cf7 center\cf0  = ( \cf7 left\cf0  + \cf7 right\cf0  ) / 2;\
+        Sort.setAssignCount(\cf7 assCount\cf0 ++);\
+        \cf4 if\cf0 ( \cf7 a\cf0 [ \cf7 center\cf0  ].compareTo( \cf7 a\cf0 [ \cf7 left\cf0  ] ) < 0 ) \{\
+            swapReferences( \cf7 a\cf0 , \cf7 left\cf0 , \cf7 center\cf0 , \cf7 assCount\cf0 , \cf7 compCount\cf0  );\
+            Sort.setCompareCount(\cf7 compCount\cf0 ++);\
+        \}\
+        \cf4 if\cf0 ( \cf7 a\cf0 [ \cf7 right\cf0  ].compareTo( \cf7 a\cf0 [ \cf7 left\cf0  ] ) < 0 ) \{\
+            swapReferences( \cf7 a\cf0 , \cf7 left\cf0 , \cf7 right\cf0 , \cf7 assCount\cf0 , \cf7 compCount\cf0  );\
+            Sort.setCompareCount(\cf7 compCount\cf0 ++);\
+        \}\
+        \cf4 if\cf0 ( \cf7 a\cf0 [ \cf7 right\cf0  ].compareTo( \cf7 a\cf0 [ \cf7 center\cf0  ] ) < 0 ) \{\
+            swapReferences( \cf7 a\cf0 , \cf7 center\cf0 , \cf7 right\cf0 , \cf7 assCount\cf0 , \cf7 compCount\cf0  );\
+            Sort.setCompareCount(\cf7 compCount\cf0 ++);\
+        \}\
+\
+            \cf5 // Place pivot at position right - 1\cf0 \
+        swapReferences( \cf7 a\cf0 , \cf7 center\cf0 , \cf7 right\cf0  - 1, \cf7 assCount\cf0 , \cf7 compCount\cf0  );\
+        \cf4 return\cf0  \cf7 a\cf0 [ \cf7 right\cf0  - 1 ];\
+    \}\
+\
+    \cf2 /**\cf0 \
+\cf2      * Internal \ul quicksort\ulnone  method that makes recursive calls.\cf0 \
+\cf2      * Uses median\cf8 -\cf2 of\cf8 -\cf2 three partitioning and a cutoff of 10.\cf0 \
+\cf2      * \cf3 @param\cf2  a an array of Comparable items.\cf0 \
+\cf2      * \cf3 @param\cf2  left the left\cf8 -\cf2 most index of the \ul subarray\ulnone .\cf0 \
+\cf2      * \cf3 @param\cf2  right the right\cf8 -\cf2 most index of the \ul subarray\ulnone .\cf0 \
+\cf2      */\cf0 \
+    \cf4 private\cf0  \cf4 static\cf0  <AnyType \cf4 extends\cf0  Comparable<? \cf4 super\cf0  AnyType>>\
+    \cf4 void\cf0  quicksort( AnyType [ ] \cf7 a\cf0 , \cf4 int\cf0  \cf7 left\cf0 , \cf4 int\cf0  \cf7 right\cf0 , \cf4 int\cf0  \cf7 assCount\cf0 , \cf4 int\cf0  \cf7 compCount\cf0  )\
+    \{\
+        \cf4 if\cf0 ( \cf7 left\cf0  + \cf6 CUTOFF\cf0  <= \cf7 right\cf0  )\
+        \{\
+        	Sort.setCompareCount(\cf7 compCount\cf0 ++);\
+            AnyType \cf7 pivot\cf0  = median3( \cf7 a\cf0 , \cf7 left\cf0 , \cf7 right\cf0 , \cf7 assCount\cf0 , \cf7 compCount\cf0  );\
+            Sort.setAssignCount(\cf7 assCount\cf0 ++);\
+\
+                \cf5 // Begin partitioning\cf0 \
+            \cf4 int\cf0  \cf7 i\cf0  = \cf7 left\cf0 , \cf7 j\cf0  = \cf7 right\cf0  - 1;\
+            Sort.setAssignCount(\cf7 assCount\cf0  + 2);\
+            \cf4 for\cf0 ( ; ; )\
+            \{\
+                \cf4 while\cf0 ( \cf7 a\cf0 [ ++\cf7 i\cf0  ].compareTo( \cf7 pivot\cf0  ) < 0 ) \{ Sort.setCompareCount(\cf7 compCount\cf0 ++); \}\
+                \cf4 while\cf0 ( \cf7 a\cf0 [ --\cf7 j\cf0  ].compareTo( \cf7 pivot\cf0  ) > 0 ) \{ Sort.setCompareCount(\cf7 compCount\cf0 ++); \}\
+                \cf4 if\cf0 ( \cf7 i\cf0  < \cf7 j\cf0  ) \{\
+                    swapReferences( \cf7 a\cf0 , \cf7 i\cf0 , \cf7 j\cf0 , \cf7 assCount\cf0 , \cf7 compCount\cf0  );\
+                \}\
+                \cf4 else\cf0  \{\
+                    \cf4 break\cf0 ;\
+                \}\
+            \}\
+\
+            swapReferences( \cf7 a\cf0 , \cf7 i\cf0 , \cf7 right\cf0  - 1, \cf7 assCount\cf0 , \cf7 compCount\cf0  );   \cf5 // Restore pivot\cf0 \
+\
+            quicksort( \cf7 a\cf0 , \cf7 left\cf0 , \cf7 i\cf0  - 1, \cf7 assCount\cf0 , \cf7 compCount\cf0  );    \cf5 // Sort small elements\cf0 \
+            quicksort( \cf7 a\cf0 , \cf7 i\cf0  + 1, \cf7 right\cf0 , \cf7 assCount\cf0 , \cf7 compCount\cf0  );   \cf5 // Sort large elements\cf0 \
+        \}\
+        \cf4 else\cf0  \{  \cf5 // Do an insertion sort on the \ul subarray\cf0 \ulnone \
+            insertionSort( \cf7 a\cf0 , \cf7 left\cf0 , \cf7 right\cf0  );\
+            Sort.setCompareCount(\cf7 compCount\cf0 ++);\
+        \}\
+    \}\
+\
+\
+    \cf2 /**\cf0 \
+\cf2 	 * Main()\cf0 \
+\cf2 	 * \cf3 @param\cf2  args\cf0 \
+\cf2 	 */\cf0 \
+	\cf4 public\cf0  \cf4 static\cf0  \cf4 void\cf0  main(String[] \cf7 args\cf0 ) \{\
+		\
+		Sort \cf7 newTest\cf0  = \cf4 new\cf0  Sort();\
+		Sort.setAssignCount(0);\
+		Sort.setCompareCount(0);\
+		\
+		\
+		\cf5 // ===================== CREATING THE ARRAYS ===========================\cf0 \
+		\cf5 //Now we must generate the three array with 25000 values!\cf0 \
+		\cf5 //constructing a random object\cf0 \
+		Integer[] \cf7 intArray1\cf0  = \cf4 new\cf0  Integer[\cf6 ARRAY_SIZE\cf0 ]; \cf5 //Array one\cf0 \
+		Integer[] \cf7 intArray2\cf0  = \cf4 new\cf0  Integer[\cf6 ARRAY_SIZE\cf0 ]; \cf5 //Array two\cf0 \
+		Integer[] \cf7 intArray3\cf0  = \cf4 new\cf0  Integer[\cf6 ARRAY_SIZE\cf0 ]; \cf5 //Array three\cf0 \
+		\
+		\
+		\cf5 //Initializing a new random number generator\cf0 \
+		Random \cf7 numGen\cf0  = \cf4 new\cf0  Random( (\cf4 int\cf0 ) System.currentTimeMillis() );\
+		\cf4 int\cf0  \cf7 randNum\cf0  = \cf7 numGen\cf0 .randomInt();\
+		\
+		\
+		\cf5 //loop to populate the first array\cf0 \
+		\cf4 for\cf0  ( \cf4 int\cf0  \cf7 i\cf0  = 0; \cf7 i\cf0  < \cf7 intArray1\cf0 .\cf6 length\cf0 ; \cf7 i\cf0 ++ ) \{\
+			\cf5 //generating a new random number each iteration\cf0 \
+			\cf5 //and then placing that integer's value into the first array's element[i]\cf0 \
+			\cf7 randNum\cf0  = \cf7 numGen\cf0 .randomInt( );\
+			\cf7 intArray1\cf0 [\cf7 i\cf0 ] = \cf7 randNum\cf0 ;\
+			\
+		\}\
+		\
+		\cf5 //To create the necessary arrays, first we must sort the first array in ascending order,\cf0 \
+		\cf5 // and sort the second array in descending order, and leave the third random (which it already is)\cf0 \
+		\cf5 //	### I KNOW THIS IS BAD FORM; ###\cf0 \
+		\cf5 //	### BUT WEISS AND I DID NOT SEE EYE TO EYE ###\cf0 \
+		Sort.heapsort(\cf7 intArray1\cf0 , Sort.getAssignCount(), Sort.getCompareCount());\
+		\
+		\
+		\cf5 //making a local integer j to reverse the intArray1 by incrementing it backward\cf0 \
+		\cf4 int\cf0  \cf7 lastIndex\cf0  = \cf7 intArray1\cf0 .\cf6 length\cf0  - 1;\
+		\
+			\
+		\cf5 //loop to populate the second array\cf0 \
+		\cf4 for\cf0  ( \cf4 int\cf0  \cf7 i\cf0  = 0; \cf7 i\cf0  < \cf7 intArray2\cf0 .\cf6 length\cf0 ; \cf7 i\cf0 ++ ) \{\
+			\cf5 //generating a new random number each iteration\cf0 \
+			\cf5 //and then placing that integer's value into the first array's element[i]\cf0 \
+			\cf7 intArray2\cf0 [\cf7 i\cf0 ] = \cf7 intArray1\cf0 [\cf7 lastIndex\cf0 --];\
+		\}\
+		\
+		\cf5 //for (\ul int\ulnone  i = 0; i < intArray2.length; i++ ) \{\cf0 \
+		\cf5 //	System.out.printf("i: %d, intArray2[%d]: %d\\n", i, i, intArray2[i]);\cf0 \
+		\cf5 //\}\cf0 \
+		\
+		\
+		\cf5 //reset j . . .\cf0 \
+		\cf7 lastIndex\cf0  = (\cf6 ARRAY_SIZE\cf0  -1);\
+		\
+		\cf5 //loop to populate the second array\cf0 \
+		\cf4 for\cf0  ( \cf4 int\cf0  \cf7 i\cf0  = 0; \cf7 i\cf0  < \cf7 intArray3\cf0 .\cf6 length\cf0 ; \cf7 i\cf0 ++ ) \{\
+			\cf5 //generating a new random number each iteration\cf0 \
+			\cf5 //and then placing that integer's value into the first array's element[i]\cf0 \
+			\cf7 intArray3\cf0 [\cf7 i\cf0 ] = \cf7 numGen\cf0 .randomInt();\
+		\}\
+		\
+		\cf5 //for (\ul int\ulnone  i = 0; i < intArray3.length; i++ ) \{\cf0 \
+		\cf5 //	System.out.printf("i: %d, intArray3[%d]: %d\\n", i, i, intArray3[i]);\cf0 \
+		\cf5 //\}\cf0 \
+		\
+		Random.permute(\cf7 intArray3\cf0 , Sort.getAssignCount(), Sort.getCompareCount());\
+		\
+		\cf5 //====================== PERFORMING THE SORTS =========================\cf0 \
+		\
+		\cf5 // *********** Insertion Sort\cf0 \
+		\cf7 newTest\cf0 .\cf6 startTime\cf0  = (\cf4 int\cf0 ) Sort.TimeInMs();\
+		Sort.insertionSort(\cf7 intArray1\cf0 , Sort.getAssignCount(), Sort.getCompareCount());\
+		\cf7 newTest\cf0 .\cf6 stopTime\cf0  = (\cf4 int\cf0 ) Sort.TimeInMs();\
+		\cf7 newTest\cf0 .\cf6 totalTime\cf0  = \cf7 newTest\cf0 .\cf6 stopTime\cf0  - \cf7 newTest\cf0 .\cf6 startTime\cf0 ;\
+		System.\cf6 out\cf0 .println(\cf9 "========= INSERTION SORT - (Ordered) ========="\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Total time: "\cf0  + \cf7 newTest\cf0 .\cf6 totalTime\cf0  + \cf9 " millisec"\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Number of Assignments: "\cf0  +  Sort.getAssignCount() + \cf9 " assignments."\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Number of Comparisons: "\cf0  + Sort.getCompareCount() + \cf9 " comparisons."\cf0 );\
+		\
+		\cf5 // Reset the variables\cf0 \
+		\cf7 newTest\cf0 .\cf6 startTime\cf0  = 0;\
+		\cf7 newTest\cf0 .\cf6 stopTime\cf0  = 0;\
+		\cf7 newTest\cf0 .\cf6 totalTime\cf0  = 0;\
+		Sort.setAssignCount(0);\
+		Sort.setCompareCount(0);\
+		\
+		\cf7 newTest\cf0 .\cf6 startTime\cf0  = (\cf4 int\cf0 ) Sort.TimeInMs();\
+		Sort.insertionSort(\cf7 intArray2\cf0 , Sort.getAssignCount(), Sort.getCompareCount());\
+		\cf7 newTest\cf0 .\cf6 stopTime\cf0  = (\cf4 int\cf0 ) Sort.TimeInMs();\
+		\cf7 newTest\cf0 .\cf6 totalTime\cf0  = \cf7 newTest\cf0 .\cf6 stopTime\cf0  - \cf7 newTest\cf0 .\cf6 startTime\cf0 ;\
+		System.\cf6 out\cf0 .println(\cf9 "========= INSERTION SORT - (Reverse) ========="\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Total time: "\cf0  + \cf7 newTest\cf0 .\cf6 totalTime\cf0  + \cf9 " millisec"\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Number of Assignments: "\cf0  + Sort.getAssignCount() + \cf9 " assignments."\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Number of Comparisons: "\cf0  + Sort.getCompareCount() + \cf9 " comparisons."\cf0 );\
+		\
+		\cf5 // Reset the variables\cf0 \
+		\cf7 newTest\cf0 .\cf6 startTime\cf0  = 0;\
+		\cf7 newTest\cf0 .\cf6 stopTime\cf0  = 0;\
+		\cf7 newTest\cf0 .\cf6 totalTime\cf0  = 0;\
+		Sort.setAssignCount(0);\
+		Sort.setCompareCount(0);\
+				\
+		\cf7 newTest\cf0 .\cf6 startTime\cf0  = (\cf4 int\cf0 ) Sort.TimeInMs();\
+		Sort.insertionSort(\cf7 intArray3\cf0 , Sort.getAssignCount(), Sort.getCompareCount());\
+		\cf7 newTest\cf0 .\cf6 stopTime\cf0  = (\cf4 int\cf0 ) Sort.TimeInMs();\
+		\cf7 newTest\cf0 .\cf6 totalTime\cf0  = \cf7 newTest\cf0 .\cf6 stopTime\cf0  - \cf7 newTest\cf0 .\cf6 startTime\cf0 ;\
+		System.\cf6 out\cf0 .println(\cf9 "========= INSERTION SORT - (Random Order) ========="\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Total time: "\cf0  + \cf7 newTest\cf0 .\cf6 totalTime\cf0  + \cf9 " millisec"\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Number of Assignments: "\cf0  + Sort.getAssignCount() + \cf9 " assignments."\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Number of Comparisons: "\cf0  + Sort.getCompareCount() + \cf9 " comparisons."\cf0 );\
+		\
+		\cf5 // Reset the variables\cf0 \
+		\cf7 newTest\cf0 .\cf6 startTime\cf0  = 0;\
+		\cf7 newTest\cf0 .\cf6 stopTime\cf0  = 0;\
+		\cf7 newTest\cf0 .\cf6 totalTime\cf0  = 0;\
+		Sort.setAssignCount(0);\
+		Sort.setCompareCount(0);\
+		\
+		\cf5 // Randomize and reverse sort arrays 2 and 3\cf0 \
+		\cf4 for\cf0  ( \cf4 int\cf0  \cf7 i\cf0  = 0; \cf7 i\cf0  < \cf7 intArray2\cf0 .\cf6 length\cf0 ; \cf7 i\cf0 ++ ) \{\
+			\cf5 //generating a new random number each iteration\cf0 \
+			\cf5 //and then placing that integer's value into the first array's element[i]\cf0 \
+			\cf7 intArray2\cf0 [\cf7 i\cf0 ] = \cf7 intArray1\cf0 [\cf7 lastIndex\cf0 --];\
+		\}\
+		\
+		\cf5 //reset j . . .\cf0 \
+		\cf7 lastIndex\cf0  = (\cf6 ARRAY_SIZE\cf0  -1);\
+		\
+		Random.permute(\cf7 intArray3\cf0 , Sort.getAssignCount(), Sort.getCompareCount());\
+		System.\cf6 out\cf0 .println(\cf9 "\\n\\n"\cf0 );\
+		\
+		\cf5 // *********** Heap sort\cf0 \
+		\cf7 newTest\cf0 .\cf6 startTime\cf0  = (\cf4 int\cf0 ) Sort.TimeInMs();\
+		Sort.heapsort(\cf7 intArray1\cf0 , Sort.getAssignCount(), Sort.getCompareCount());\
+		\cf7 newTest\cf0 .\cf6 stopTime\cf0  = (\cf4 int\cf0 ) Sort.TimeInMs();\
+		\cf7 newTest\cf0 .\cf6 totalTime\cf0  = \cf7 newTest\cf0 .\cf6 stopTime\cf0  - \cf7 newTest\cf0 .\cf6 startTime\cf0 ;\
+		System.\cf6 out\cf0 .println(\cf9 "========= HEAP SORT - (Ordered) ========="\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Total time: "\cf0  + \cf7 newTest\cf0 .\cf6 totalTime\cf0  + \cf9 " millisec"\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Number of Assignments: "\cf0  + Sort.getAssignCount() + \cf9 " assignments."\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Number of Comparisons: "\cf0  + Sort.getCompareCount() + \cf9 " comparisons."\cf0 );\
+		\
+		\
+		\cf5 // Reset the variables\cf0 \
+		\cf7 newTest\cf0 .\cf6 startTime\cf0  = 0;\
+		\cf7 newTest\cf0 .\cf6 stopTime\cf0  = 0;\
+		\cf7 newTest\cf0 .\cf6 totalTime\cf0  = 0;\
+		Sort.setAssignCount(0);\
+		Sort.setCompareCount(0);\
+		\
+		\cf7 newTest\cf0 .\cf6 startTime\cf0  = (\cf4 int\cf0 ) Sort.TimeInMs();\
+		Sort.heapsort(\cf7 intArray2\cf0 , Sort.getAssignCount(), Sort.getCompareCount());\
+		\cf7 newTest\cf0 .\cf6 stopTime\cf0  = (\cf4 int\cf0 ) Sort.TimeInMs();\
+		\cf7 newTest\cf0 .\cf6 totalTime\cf0  = \cf7 newTest\cf0 .\cf6 stopTime\cf0  - \cf7 newTest\cf0 .\cf6 startTime\cf0 ;\
+		System.\cf6 out\cf0 .println(\cf9 "========= HEAP SORT - (Reverse) ========="\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Total time: "\cf0  + \cf7 newTest\cf0 .\cf6 totalTime\cf0  + \cf9 " millisec"\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Number of Assignments: "\cf0  + Sort.getAssignCount() + \cf9 " assignments."\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Number of Comparisons: "\cf0  + Sort.getCompareCount() + \cf9 " comparisons."\cf0 );\
+		\
+		\
+		\cf5 // Reset the variables\cf0 \
+		\cf7 newTest\cf0 .\cf6 startTime\cf0  = 0;\
+		\cf7 newTest\cf0 .\cf6 stopTime\cf0  = 0;\
+		\cf7 newTest\cf0 .\cf6 totalTime\cf0  = 0;\
+		Sort.setAssignCount(0);\
+		Sort.setCompareCount(0);\
+				\
+		\cf7 newTest\cf0 .\cf6 startTime\cf0  = (\cf4 int\cf0 ) Sort.TimeInMs();\
+		Sort.heapsort(\cf7 intArray3\cf0 , Sort.getAssignCount(), Sort.getCompareCount());\
+		\cf7 newTest\cf0 .\cf6 stopTime\cf0  = (\cf4 int\cf0 ) Sort.TimeInMs();\
+		\cf7 newTest\cf0 .\cf6 totalTime\cf0  = \cf7 newTest\cf0 .\cf6 stopTime\cf0  - \cf7 newTest\cf0 .\cf6 startTime\cf0 ;\
+		System.\cf6 out\cf0 .println(\cf9 "========= HEAP SORT - (Random Order) ========="\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Total time: "\cf0  + \cf7 newTest\cf0 .\cf6 totalTime\cf0  + \cf9 " millisec"\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Number of Assignments: "\cf0  + Sort.getAssignCount() + \cf9 " assignments."\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Number of Comparisons: "\cf0  + Sort.getCompareCount() + \cf9 " comparisons."\cf0 );\
+		\cf5 // Reset the variables\cf0 \
+		\cf7 newTest\cf0 .\cf6 startTime\cf0  = 0;\
+		\cf7 newTest\cf0 .\cf6 stopTime\cf0  = 0;\
+		\cf7 newTest\cf0 .\cf6 totalTime\cf0  = 0;\
+		Sort.setAssignCount(0);\
+		Sort.setCompareCount(0);\
+		\
+		\cf5 // Randomize and reverse sort arrays 2 and 3\cf0 \
+		\cf4 for\cf0  ( \cf4 int\cf0  \cf7 i\cf0  = 0; \cf7 i\cf0  < \cf7 intArray2\cf0 .\cf6 length\cf0 ; \cf7 i\cf0 ++ ) \{\
+			\cf5 //generating a new random number each iteration\cf0 \
+			\cf5 //and then placing that integer's value into the first array's element[i]\cf0 \
+			\cf7 intArray2\cf0 [\cf7 i\cf0 ] = \cf7 intArray1\cf0 [\cf7 lastIndex\cf0 --];\
+		\}\
+		\
+		\cf5 //reset j . . .\cf0 \
+		\cf7 lastIndex\cf0  = (\cf6 ARRAY_SIZE\cf0  -1);\
+		\
+		Random.permute(\cf7 intArray3\cf0 , Sort.getAssignCount(), Sort.getCompareCount());\
+		System.\cf6 out\cf0 .println(\cf9 "\\n\\n"\cf0 );\
+		\
+		\cf5 // *********** Merge sort \cf0 \
+		\cf7 newTest\cf0 .\cf6 startTime\cf0  = (\cf4 int\cf0 ) Sort.TimeInMs();\
+		Sort.mergeSort(\cf7 intArray1\cf0 , Sort.getAssignCount(), Sort.getCompareCount());\
+		\cf7 newTest\cf0 .\cf6 stopTime\cf0  = (\cf4 int\cf0 ) Sort.TimeInMs();\
+		\cf7 newTest\cf0 .\cf6 totalTime\cf0  = \cf7 newTest\cf0 .\cf6 stopTime\cf0  - \cf7 newTest\cf0 .\cf6 startTime\cf0 ;\
+		System.\cf6 out\cf0 .println(\cf9 "========= MERGE SORT - (Ordered) ========="\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Total time: "\cf0  + \cf7 newTest\cf0 .\cf6 totalTime\cf0  + \cf9 " millisec"\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Number of Assignments: "\cf0  + Sort.getAssignCount() + \cf9 " assignments."\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Number of Comparisons: "\cf0  + Sort.getCompareCount() + \cf9 " comparisons."\cf0 );\
+		\cf5 // Reset the variables\cf0 \
+		\cf7 newTest\cf0 .\cf6 startTime\cf0  = 0;\
+		\cf7 newTest\cf0 .\cf6 stopTime\cf0  = 0;\
+		\cf7 newTest\cf0 .\cf6 totalTime\cf0  = 0;\
+		Sort.setAssignCount(0);\
+		Sort.setCompareCount(0);\
+		\
+		\cf7 newTest\cf0 .\cf6 startTime\cf0  = (\cf4 int\cf0 ) Sort.TimeInMs();\
+		Sort.mergeSort(\cf7 intArray2\cf0 , Sort.getAssignCount(), Sort.getCompareCount());\
+		\cf7 newTest\cf0 .\cf6 stopTime\cf0  = (\cf4 int\cf0 ) Sort.TimeInMs();\
+		\cf7 newTest\cf0 .\cf6 totalTime\cf0  = \cf7 newTest\cf0 .\cf6 stopTime\cf0  - \cf7 newTest\cf0 .\cf6 startTime\cf0 ;\
+		System.\cf6 out\cf0 .println(\cf9 "========= MERGE SORT - (Reverse) ========="\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Total time: "\cf0  + \cf7 newTest\cf0 .\cf6 totalTime\cf0  + \cf9 " millisec"\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Number of Assignments: "\cf0  + Sort.getAssignCount() + \cf9 " assignments."\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Number of Comparisons: "\cf0  + Sort.getCompareCount() + \cf9 " comparisons."\cf0 );\
+		\cf5 // Reset the variables\cf0 \
+		\cf7 newTest\cf0 .\cf6 startTime\cf0  = 0;\
+		\cf7 newTest\cf0 .\cf6 stopTime\cf0  = 0;\
+		\cf7 newTest\cf0 .\cf6 totalTime\cf0  = 0;\
+		Sort.setAssignCount(0);\
+		Sort.setCompareCount(0);\
+				\
+		\cf7 newTest\cf0 .\cf6 startTime\cf0  = (\cf4 int\cf0 ) Sort.TimeInMs();\
+		Sort.mergeSort(\cf7 intArray3\cf0 , Sort.getAssignCount(), Sort.getCompareCount());\
+		\cf7 newTest\cf0 .\cf6 stopTime\cf0  = (\cf4 int\cf0 ) Sort.TimeInMs();\
+		\cf7 newTest\cf0 .\cf6 totalTime\cf0  = \cf7 newTest\cf0 .\cf6 stopTime\cf0  - \cf7 newTest\cf0 .\cf6 startTime\cf0 ;\
+		System.\cf6 out\cf0 .println(\cf9 "========= MERGE SORT - (Random Order) ========="\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Total time: "\cf0  + \cf7 newTest\cf0 .\cf6 totalTime\cf0  + \cf9 " millisec"\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Number of Assignments: "\cf0  + Sort.getAssignCount() + \cf9 " assignments."\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Number of Comparisons: "\cf0  + Sort.getCompareCount() + \cf9 " comparisons."\cf0 );\
+		\cf5 // Reset the variables\cf0 \
+		\cf7 newTest\cf0 .\cf6 startTime\cf0  = 0;\
+		\cf7 newTest\cf0 .\cf6 stopTime\cf0  = 0;\
+		\cf7 newTest\cf0 .\cf6 totalTime\cf0  = 0;\
+		Sort.setAssignCount(0);\
+		Sort.setCompareCount(0);\
+		\
+		\cf5 // Randomize and reverse sort arrays 2 and 3\cf0 \
+		\cf4 for\cf0  ( \cf4 int\cf0  \cf7 i\cf0  = 0; \cf7 i\cf0  < \cf7 intArray2\cf0 .\cf6 length\cf0 ; \cf7 i\cf0 ++ ) \{\
+			\cf5 //generating a new random number each iteration\cf0 \
+			\cf5 //and then placing that integer's value into the first array's element[i]\cf0 \
+			\cf7 intArray2\cf0 [\cf7 i\cf0 ] = \cf7 intArray1\cf0 [\cf7 lastIndex\cf0 --];\
+		\}\
+		\
+		\cf5 //reset j . . .\cf0 \
+		\cf7 lastIndex\cf0  = (\cf6 ARRAY_SIZE\cf0  -1);\
+		\
+		Random.permute(\cf7 intArray3\cf0 , Sort.getAssignCount(), Sort.getCompareCount());\
+		System.\cf6 out\cf0 .println(\cf9 "\\n\\n"\cf0 );\
+\pard\pardeftab720
+\cf5 //		\cf0 \
+\cf5 //		// *********** Shell sort \cf0 \
+		\cf7 newTest\cf0 .\cf6 startTime\cf0  = (\cf4 int\cf0 ) Sort.TimeInMs();\
+		Sort.shellsort(\cf7 intArray1\cf0 , Sort.getAssignCount(), Sort.getCompareCount());\
+		\cf7 newTest\cf0 .\cf6 stopTime\cf0  = (\cf4 int\cf0 ) Sort.TimeInMs();\
+		\cf7 newTest\cf0 .\cf6 totalTime\cf0  = \cf7 newTest\cf0 .\cf6 stopTime\cf0  - \cf7 newTest\cf0 .\cf6 startTime\cf0 ;\
+		System.\cf6 out\cf0 .println(\cf9 "========= SHELL SORT - (Ordered) ========="\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Total time: "\cf0  + \cf7 newTest\cf0 .\cf6 totalTime\cf0  + \cf9 " millisec"\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Number of Assignments: "\cf0  + Sort.getAssignCount() + \cf9 " assignments."\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Number of Comparisons: "\cf0  + Sort.getCompareCount() + \cf9 " comparisons."\cf0 );\
+		\cf5 // Reset the variables\cf0 \
+		\cf7 newTest\cf0 .\cf6 startTime\cf0  = 0;\
+		\cf7 newTest\cf0 .\cf6 stopTime\cf0  = 0;\
+		\cf7 newTest\cf0 .\cf6 totalTime\cf0  = 0;\
+		Sort.setAssignCount(0);\
+		Sort.setCompareCount(0);\
+		\
+		\cf7 newTest\cf0 .\cf6 startTime\cf0  = (\cf4 int\cf0 ) Sort.TimeInMs();\
+		Sort.shellsort(\cf7 intArray2\cf0 , Sort.getAssignCount(), Sort.getCompareCount());\
+		\cf7 newTest\cf0 .\cf6 stopTime\cf0  = (\cf4 int\cf0 ) Sort.TimeInMs();\
+		\cf7 newTest\cf0 .\cf6 totalTime\cf0  = \cf7 newTest\cf0 .\cf6 stopTime\cf0  - \cf7 newTest\cf0 .\cf6 startTime\cf0 ;\
+		System.\cf6 out\cf0 .println(\cf9 "========= SHELL SORT - (Reverse) ========="\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Total time: "\cf0  + \cf7 newTest\cf0 .\cf6 totalTime\cf0  + \cf9 " millisec"\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Number of Assignments: "\cf0  + Sort.getAssignCount() + \cf9 " assignments."\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Number of Comparisons: "\cf0  + Sort.getCompareCount() + \cf9 " comparisons."\cf0 );\
+		\cf5 // Reset the variables\cf0 \
+		\cf7 newTest\cf0 .\cf6 startTime\cf0  = 0;\
+		\cf7 newTest\cf0 .\cf6 stopTime\cf0  = 0;\
+		\cf7 newTest\cf0 .\cf6 totalTime\cf0  = 0;\
+		Sort.setAssignCount(0);\
+		Sort.setCompareCount(0);\
+				\
+		\cf7 newTest\cf0 .\cf6 startTime\cf0  = (\cf4 int\cf0 ) Sort.TimeInMs();\
+		Sort.shellsort(\cf7 intArray3\cf0 , Sort.getAssignCount(), Sort.getCompareCount());\
+		\cf7 newTest\cf0 .\cf6 stopTime\cf0  = (\cf4 int\cf0 ) Sort.TimeInMs();\
+		\cf7 newTest\cf0 .\cf6 totalTime\cf0  = \cf7 newTest\cf0 .\cf6 stopTime\cf0  - \cf7 newTest\cf0 .\cf6 startTime\cf0 ;\
+		System.\cf6 out\cf0 .println(\cf9 "========= SHELL SORT - (Random Order) ========="\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Total time: "\cf0  + \cf7 newTest\cf0 .\cf6 totalTime\cf0  + \cf9 " millisec"\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Number of Assignments: "\cf0  + Sort.getAssignCount() + \cf9 " assignments."\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Number of Comparisons: "\cf0  + Sort.getCompareCount() + \cf9 " comparisons."\cf0 );\
+		\cf5 // Reset the variables\cf0 \
+		\cf7 newTest\cf0 .\cf6 startTime\cf0  = 0;\
+		\cf7 newTest\cf0 .\cf6 stopTime\cf0  = 0;\
+		\cf7 newTest\cf0 .\cf6 totalTime\cf0  = 0;\
+		Sort.setAssignCount(0);\
+		Sort.setCompareCount(0);\
+		\
+		\cf5 // Randomize and reverse sort arrays 2 and 3\cf0 \
+		\cf4 for\cf0  ( \cf4 int\cf0  \cf7 i\cf0  = 0; \cf7 i\cf0  < \cf7 intArray2\cf0 .\cf6 length\cf0 ; \cf7 i\cf0 ++ ) \{\
+			\cf5 //generating a new random number each iteration\cf0 \
+			\cf5 //and then placing that integer's value into the first array's element[i]\cf0 \
+			\cf7 intArray2\cf0 [\cf7 i\cf0 ] = \cf7 intArray1\cf0 [\cf7 lastIndex\cf0 --];\
+		\}\
+		\
+		\cf5 //reset j . . .\cf0 \
+		\cf7 lastIndex\cf0  = (\cf6 ARRAY_SIZE\cf0  -1);\
+		\
+		Random.permute(\cf7 intArray3\cf0 , Sort.getAssignCount(), Sort.getCompareCount());\
+		System.\cf6 out\cf0 .println(\cf9 "\\n\\n"\cf0 );\
+\cf5 //		\cf0 \
+\cf5 //		// *********** Quick sort \cf0 \
+		\cf7 newTest\cf0 .\cf6 startTime\cf0  = (\cf4 int\cf0 ) Sort.TimeInMs();\
+		Sort.quicksort(\cf7 intArray1\cf0 , Sort.getAssignCount(), Sort.getCompareCount());\
+		\cf7 newTest\cf0 .\cf6 stopTime\cf0  = (\cf4 int\cf0 ) Sort.TimeInMs();\
+		\cf7 newTest\cf0 .\cf6 totalTime\cf0  = \cf7 newTest\cf0 .\cf6 stopTime\cf0  - \cf7 newTest\cf0 .\cf6 startTime\cf0 ;\
+		System.\cf6 out\cf0 .println(\cf9 "========= QUICK SORT - (Ordered) ========="\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Total time: "\cf0  + \cf7 newTest\cf0 .\cf6 totalTime\cf0  + \cf9 " millisec"\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Number of Assignments: "\cf0  + Sort.getAssignCount() + \cf9 " assignments."\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Number of Comparisons: "\cf0  + Sort.getCompareCount() + \cf9 " comparisons."\cf0 );\
+		\cf5 // Reset the variables\cf0 \
+		\cf7 newTest\cf0 .\cf6 startTime\cf0  = 0;\
+		\cf7 newTest\cf0 .\cf6 stopTime\cf0  = 0;\
+		\cf7 newTest\cf0 .\cf6 totalTime\cf0  = 0;\
+		Sort.setAssignCount(0);\
+		Sort.setCompareCount(0);\
+		\
+		\cf7 newTest\cf0 .\cf6 startTime\cf0  = (\cf4 int\cf0 ) Sort.TimeInMs();\
+		Sort.quicksort(\cf7 intArray2\cf0 , Sort.getAssignCount(), Sort.getCompareCount());\
+		\cf7 newTest\cf0 .\cf6 stopTime\cf0  = (\cf4 int\cf0 ) Sort.TimeInMs();\
+		\cf7 newTest\cf0 .\cf6 totalTime\cf0  = \cf7 newTest\cf0 .\cf6 stopTime\cf0  - \cf7 newTest\cf0 .\cf6 startTime\cf0 ;\
+		System.\cf6 out\cf0 .println(\cf9 "========= QUICK SORT - (Reverse) ========="\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Total time: "\cf0  + \cf7 newTest\cf0 .\cf6 totalTime\cf0  + \cf9 " millisec"\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Number of Assignments: "\cf0  + Sort.getAssignCount() + \cf9 " assignments."\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Number of Comparisons: "\cf0  + Sort.getCompareCount() + \cf9 " comparisons."\cf0 );\
+		\cf5 // Reset the variables\cf0 \
+		\cf7 newTest\cf0 .\cf6 startTime\cf0  = 0;\
+		\cf7 newTest\cf0 .\cf6 stopTime\cf0  = 0;\
+		\cf7 newTest\cf0 .\cf6 totalTime\cf0  = 0;\
+		Sort.setAssignCount(0);\
+		Sort.setCompareCount(0);\
+				\
+		\cf7 newTest\cf0 .\cf6 startTime\cf0  = (\cf4 int\cf0 ) Sort.TimeInMs();\
+		Sort.quicksort(\cf7 intArray3\cf0 , Sort.getAssignCount(), Sort.getCompareCount());\
+		\cf7 newTest\cf0 .\cf6 stopTime\cf0  = (\cf4 int\cf0 ) Sort.TimeInMs();\
+		\cf7 newTest\cf0 .\cf6 totalTime\cf0  = \cf7 newTest\cf0 .\cf6 stopTime\cf0  - \cf7 newTest\cf0 .\cf6 startTime\cf0 ;\
+		System.\cf6 out\cf0 .println(\cf9 "========= QUICK SORT - (Random Order) ========="\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Total time: "\cf0  + \cf7 newTest\cf0 .\cf6 totalTime\cf0  + \cf9 " millisec"\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Number of Assignments: "\cf0  + Sort.getAssignCount() + \cf9 " assignments."\cf0 );\
+		System.\cf6 out\cf0 .println(\cf9 "Number of Comparisons: "\cf0  + Sort.getCompareCount() + \cf9 " comparisons."\cf0 );\
+		\cf5 // Reset the variables\cf0 \
+		\cf7 newTest\cf0 .\cf6 startTime\cf0  = 0;\
+		\cf7 newTest\cf0 .\cf6 stopTime\cf0  = 0;\
+		\cf7 newTest\cf0 .\cf6 totalTime\cf0  = 0;\
+		Sort.setAssignCount(0);\
+		Sort.setCompareCount(0);\
+		\
+		\cf5 // Randomize and reverse sort arrays 2 and 3\cf0 \
+		\cf4 for\cf0  ( \cf4 int\cf0  \cf7 i\cf0  = 0; \cf7 i\cf0  < \cf7 intArray2\cf0 .\cf6 length\cf0 ; \cf7 i\cf0 ++ ) \{\
+			\cf5 //generating a new random number each iteration\cf0 \
+			\cf5 //and then placing that integer's value into the first array's element[i]\cf0 \
+			\cf7 intArray2\cf0 [\cf7 i\cf0 ] = \cf7 intArray1\cf0 [\cf7 lastIndex\cf0 --];\
+		\}\
+		\
+		\cf5 //reset j . . .\cf0 \
+		\cf7 lastIndex\cf0  = (\cf6 ARRAY_SIZE\cf0  -1);\
+		\
+		Random.permute(\cf7 intArray3\cf0 , Sort.getAssignCount(), Sort.getCompareCount());\
+		\
+		\
+		\cf5 // ===========================================================================\cf0 \
+		\cf5 //PRINT STATEMENTS FOR THE ARRAY\cf0 \
+\cf5 //		for (\ul int\ulnone  i = 0; i < intArray1.length; i++ ) \{\cf0 \
+\cf5 //			System.out.printf("Value number %d in intArray1 = %d\\n", i, intArray1[i]);\cf0 \
+\cf5 //		\}\cf0 \
+\cf5 //		\cf0 \
+\cf5 //		for (\ul int\ulnone  i = 0; i < intArray2.length; i++ ) \{\cf0 \
+\cf5 //			System.out.printf("Value number %d in intArray2 = %d\\n", i, intArray2[i]);\cf0 \
+\cf5 //		\}\cf0 \
+\cf5 //		\cf0 \
+\cf5 //		for (\ul int\ulnone  i = 0; i < intArray3.length; i++ ) \{\cf0 \
+\cf5 //			System.out.printf("Value number %d in intArray3 = %d\\n", i, intArray3[i]);\cf0 \
+\cf5 //		\}\cf0 \
+		\
+		\cf5 //Getter and setter methods\cf0 \
+	\}\
+\
+\
+	\cf2 /**\cf0 \
+\pard\pardeftab720
+\cf2 	 * getAssignCount()\cf0 \
+\cf2 	 * \cf3 @return\cf2  assignCount\cf0 \
+\cf2 	 */\cf0 \
+	\cf4 public\cf0  \cf4 static\cf0  \cf4 int\cf0  getAssignCount() \{\
+		\cf4 return\cf0  \cf6 assignCount\cf0 ;\
+	\}\
+\
+\
+	\cf2 /**\cf0 \
+\cf2 	 * \cf0 \
+\cf2 	 * \cf3 @param\cf2  assignCount\cf0 \
+\cf2 	 */\cf0 \
+	\cf4 public\cf0  \cf4 static\cf0  \cf4 void\cf0  setAssignCount(\cf4 int\cf0  \cf7 assignCount\cf0 ) \{\
+		Sort.\cf6 assignCount\cf0  = \cf7 assignCount\cf0 ;\
+	\}\
+\
+\
+	\cf2 /**\cf0 \
+\cf2 	 * \cf0 \
+\cf2 	 * \cf3 @return\cf2  compareCount\cf0 \
+\cf2 	 */\cf0 \
+	\cf4 public\cf0  \cf4 static\cf0  \cf4 int\cf0  getCompareCount() \{\
+		\cf4 return\cf0  \cf6 compareCount\cf0 ;\
+	\}\
+\
+\
+	\cf2 /**\cf0 \
+\cf2 	 * \cf0 \
+\cf2 	 * \cf3 @param\cf2  compareCount\cf0 \
+\cf2 	 */\cf0 \
+	\cf4 public\cf0  \cf4 static\cf0  \cf4 void\cf0  setCompareCount(\cf4 int\cf0  \cf7 compareCount\cf0 ) \{\
+		Sort.\cf6 compareCount\cf0  = \cf7 compareCount\cf0 ;\
+	\}\
+\
+\}\
+\
+}

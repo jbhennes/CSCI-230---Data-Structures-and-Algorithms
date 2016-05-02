@@ -1,0 +1,467 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1344\cocoasubrtf720
+{\fonttbl\f0\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;\red170\green13\blue145;\red0\green116\blue0;\red2\green61\blue16;
+\red28\green0\blue207;\red196\green26\blue22;}
+\margl1440\margr1440\vieww12540\viewh13520\viewkind1
+\deftab529
+\pard\tx529\pardeftab529\pardirnatural
+
+\f0\fs22 \cf2 \CocoaLigature0 public\cf0  \cf2 class\cf0  BinarySearchTree<AnyType \cf2 extends\cf0  Comparable<? \cf2 super\cf0  AnyType>>\
+\{\
+    \cf3 /**\
+     * Construct the tree.\
+     */\cf0 \
+    \cf2 public\cf0  BinarySearchTree( )\
+    \{\
+        root = \cf2 null\cf0 ;\
+    \}\
+\
+    \cf3 /**\
+     * Insert into the tree; duplicates are ignored.\
+     * \cf4 @param\cf3  x the item to insert.\
+     */\cf0 \
+    \cf2 public\cf0  \cf2 void\cf0  insert( AnyType x )\
+    \{\
+        root = insert( x, root );\
+    \}\
+\
+    \cf3 /**\
+     * Remove from the tree. Nothing is done if x is not found.\
+     * If x is in a node with two children, x will be replaced by\
+     * the smallest value in the its right subtree.\
+     * \cf4 @param\cf3  x the item to remove.\
+     */\cf0 \
+    \cf2 public\cf0  \cf2 void\cf0  remove( AnyType x )\
+    \{\
+        root = remove( x, root );\
+    \}\
+    \cf3 /**\
+     * Remove from the tree. Nothing is done if x is not found.\
+     * If x is in a node with two children, x is replaced by the largest\
+     * value in its left subtree.\
+     * \cf4 @param\cf3  x the item to remove.\
+     */\cf0 \
+    \cf2 public\cf0  \cf2 void\cf0  removeL( AnyType x )\
+    \{\
+        root = removeL( x, root );\
+    \}\
+    \cf3 /**\
+     * Remove from the tree. Nothing is done if x is not found.\
+     * The subtree from which x's replacement comes alternates each time\
+     * this method is called.\
+     * \cf4 @param\cf3  x the item to remove.\
+     */\cf0 \
+    \cf2 private\cf0  Boolean removeFromRight = \cf2 true\cf0 ;\
+    \cf2 public\cf0  \cf2 void\cf0  removeAlternating( AnyType x )\
+    \{\
+        \cf2 if\cf0  (removeFromRight)\
+            root = remove( x, root );\
+        \cf2 else\cf0 \
+            root = removeL( x, root );\
+        removeFromRight = !removeFromRight;\
+    \}\
+        \cf3 /**\
+     * Remove from the tree. Nothing is done if x is not found.\
+     * The subtree from which x's replacement comes is chosen at random.\
+     * \cf4 @param\cf3  x the item to remove.\
+     */\cf0  \cf2 private\cf0  Boolean removeRight;\
+    \cf2 public\cf0  \cf2 void\cf0  removeRandomly( AnyType x )\
+    \{ \
+        Boolean removeRight = Math.round(Math.random()\cf5 +1\cf0 ) == \cf5 1\cf0 ;\
+        \cf2 if\cf0  (removeRight)\
+           root = remove( x, root );\
+        \cf2 else\cf0 \
+            root = removeL(x, root); \
+    \}\
+    \cf3 /**\
+     * Find the smallest item in the tree.\
+     * \cf4 @return\cf3  smallest item or null if empty.\
+     */\cf0 \
+    \cf2 public\cf0  AnyType findMin( )\
+    \{\
+        \cf2 if\cf0 ( isEmpty( ) )\
+            \cf2 throw\cf0  \cf2 new\cf0  UnderflowException( );\
+        \cf2 return\cf0  findMin( root ).element;\
+    \}\
+\
+    \cf3 /**\
+     * Find the largest item in the tree.\
+     * \cf4 @return\cf3  the largest item of null if empty.\
+     */\cf0 \
+    \cf2 public\cf0  AnyType findMax( )\
+    \{\
+        \cf2 if\cf0 ( isEmpty( ) )\
+            \cf2 throw\cf0  \cf2 new\cf0  UnderflowException( );\
+        \cf2 return\cf0  findMax( root ).element;\
+    \}\
+\
+    \cf3 /**\
+     * Find an item in the tree.\
+     * \cf4 @param\cf3  x the item to search for.\
+     * \cf4 @return\cf3  true if not found.\
+     */\cf0 \
+    \cf2 public\cf0  \cf2 boolean\cf0  contains( AnyType x )\
+    \{\
+        \cf2 return\cf0  contains( x, root );\
+    \}\
+\
+    \cf3 /**\
+     * Make the tree logically empty.\
+     */\cf0 \
+    \cf2 public\cf0  \cf2 void\cf0  makeEmpty( )\
+    \{\
+        root = \cf2 null\cf0 ;\
+    \}\
+\
+    \cf3 /**\
+     * Test if the tree is logically empty.\
+     * \cf4 @return\cf3  true if empty, false otherwise.\
+     */\cf0 \
+    \cf2 public\cf0  \cf2 boolean\cf0  isEmpty( )\
+    \{\
+        \cf2 return\cf0  root == \cf2 null\cf0 ;\
+    \}\
+\
+    \cf3 /**\
+     * Print the tree contents in sorted order.\
+     */\cf0 \
+    \cf2 public\cf0  \cf2 void\cf0  printTree( )\
+    \{\
+        \cf2 if\cf0 ( isEmpty( ) )\
+            System.out.println( \cf6 "Empty tree"\cf0  );\
+        \cf2 else\cf0 \
+            printTree( root );\
+    \}\
+    \
+    \cf3 /**\
+     * Shuffles an array of numbers randomly, using the Fisher-Yates shuffle.\
+     * Credit goes to stackoverflow.com/questions/1519736/random-shuffling-of-an-array\
+     * \cf4 @param\cf3  itemList, an array of integers.\
+     */\cf0 \
+    \cf2 static\cf0  \cf2 void\cf0  shuffleArray( \cf2 int\cf0 [] itemList ) \{\
+    	\cf3 //Creating a new random number generator\cf0 \
+    	Random rnd = \cf2 new\cf0  Random();\
+    	\cf3 //\cf0 \
+    	\cf2 for\cf0  (\cf2 int\cf0  i = (itemList.length - \cf5 1\cf0 ); i > \cf5 0\cf0 ; i-- ) \{\
+    		\cf2 int\cf0  index = rnd.nextInt(i + \cf5 1\cf0 );\
+    		\cf3 // A quick swap using listMarker as a temp variable\cf0 \
+    		\cf2 int\cf0  listMarker = itemList[index];\
+    		itemList[index] = itemList[i];\
+    		itemList[i] = listMarker;\
+    		\}\
+    \}\
+\
+    \cf3 /**\
+     * Internal method to insert into a subtree.\
+     * \cf4 @param\cf3  x the item to insert.\
+     * \cf4 @param\cf3  t the node that roots the subtree.\
+     * \cf4 @return\cf3  the new root of the subtree.\
+     */\cf0 \
+    \cf2 private\cf0  BinaryNode<AnyType> insert( AnyType x, BinaryNode<AnyType> t )\
+    \{\
+        \cf2 if\cf0 ( t == \cf2 null\cf0  )\
+            \cf2 return\cf0  \cf2 new\cf0  BinaryNode<>( x, \cf2 null\cf0 , \cf2 null\cf0  );\
+        \
+        \cf2 int\cf0  compareResult = x.compareTo( t.element );\
+            \
+        \cf2 if\cf0 ( compareResult < \cf5 0\cf0  )\
+            t.left = insert( x, t.left );\
+        \cf2 else\cf0  \cf2 if\cf0 ( compareResult > \cf5 0\cf0  )\
+            t.right = insert( x, t.right );\
+        \cf2 else\cf0 \
+            ;  \cf3 // Duplicate; do nothing\cf0 \
+        \cf2 return\cf0  t;\
+    \}\
+\
+    \cf3 /**\
+     * Internal method to remove from a subtree.\
+     *    Specifically, if the value to be removed is in a node with\
+     *    two children, this method removes the value by replacing it with\
+     *    the smallest value in the "to be removed" nodes right subtree.\
+     * \cf4 @param\cf3  x the item to remove.\
+     * \cf4 @param\cf3  t the node that roots the subtree.\
+     * \cf4 @return\cf3  the new root of the subtree.\
+     */\cf0 \
+    \cf2 private\cf0  BinaryNode<AnyType> remove( AnyType x, BinaryNode<AnyType> t )\
+    \{\
+        \cf2 if\cf0 ( t == \cf2 null\cf0  ) \{ \cf3 // Item not found; do nothing\cf0 \
+        	count++;\
+            \cf2 return\cf0  t;\
+        \}\
+            \
+        \cf2 int\cf0  compareResult = x.compareTo( t.element );\
+        count++;\
+            \
+        \cf2 if\cf0 ( compareResult < \cf5 0\cf0  ) \{\
+        	count++;\
+            t.left = remove( x, t.left );\
+        \}\
+        \cf2 else\cf0  \cf2 if\cf0 ( compareResult > \cf5 0\cf0  ) \{\
+        	count++;\
+            t.right = remove( x, t.right );\
+        \}\
+        \cf2 else\cf0  \cf2 if\cf0 ( t.left != \cf2 null\cf0  && t.right != \cf2 null\cf0  ) \cf3 // Two children\cf0 \
+        \{\
+        	count++;\
+            t.element = findMin( t.right ).element;\
+            count++;\
+            t.right = remove( t.element, t.right );\
+        \}\
+        \cf2 else\cf0  \{\
+        	count++;\
+            t = ( t.left != \cf2 null\cf0  ) ? t.left : t.right;\
+        \}\
+        \cf2 return\cf0  t;\
+    \}\
+\
+\
+     \cf3 /**\
+     * Internal method to remove from a subtree.\
+     *   Specifically, if the value to be removed is in a node with\
+     *    two children, this method removes the value by replacing it with\
+     *    the largest value in the "to be removed" nodes left subtree.\
+     * \cf4 @param\cf3  x the item to remove.\
+     * \cf4 @param\cf3  t the node that roots the subtree.\
+     * \cf4 @return\cf3  the new root of the subtree.\
+     */\cf0 \
+    \cf2 private\cf0  BinaryNode<AnyType> removeL( AnyType x, BinaryNode<AnyType> t )\
+    \{\
+        \cf2 if\cf0 ( t == \cf2 null\cf0  ) \{\
+        	count++;\
+            \cf2 return\cf0  t;   \cf3 // Item not found; do nothing\cf0 \
+        \}\
+            \
+        \cf2 int\cf0  compareResult = x.compareTo( t.element );\
+        count++;\
+            \
+        \cf2 if\cf0 ( compareResult < \cf5 0\cf0  ) \{\
+        	count++;\
+            t.left = remove( x, t.left );\
+        \}\
+        \cf2 else\cf0  \cf2 if\cf0 ( compareResult > \cf5 0\cf0  ) \{\
+        	count++;\
+            t.right = remove( x, t.right );\
+        \}\
+        \cf2 else\cf0  \cf2 if\cf0 ( t.left != \cf2 null\cf0  && t.right != \cf2 null\cf0  ) \cf3 // Two children\cf0 \
+        \{\
+        	count++;\
+            t.element = findMax( t.left ).element;\
+            count++;\
+            t.left = removeL( t.element, t.left );\
+        \}\
+        \cf2 else\cf0  \{\
+        	count++;\
+            t = ( t.left != \cf2 null\cf0  ) ? t.left : t.right;\
+        \}\
+        \cf2 return\cf0  t;\
+    \}\
+    \
+    \cf3 /**\
+     * Internal method to find the smallest item in a subtree.\
+     * \cf4 @param\cf3  t the node that roots the subtree.\
+     * \cf4 @return\cf3  node containing the smallest item.\
+     */\cf0 \
+    \cf2 private\cf0  BinaryNode<AnyType> findMin( BinaryNode<AnyType> t )\
+    \{\
+        \cf2 if\cf0 ( t == \cf2 null\cf0  ) \{\
+        	count++;\
+            \cf2 return\cf0  \cf2 null\cf0 ;\
+        \}\
+        \cf2 else\cf0  \cf2 if\cf0 ( t.left == \cf2 null\cf0  ) \{\
+            count++;\
+        	\cf2 return\cf0  t;\
+        \}\
+        \cf2 return\cf0  findMin( t.left );\
+    \}\
+\
+    \cf3 /**\
+     * Internal method to find the largest item in a subtree.\
+     * \cf4 @param\cf3  t the node that roots the subtree.\
+     * \cf4 @return\cf3  node containing the largest item.\
+     */\cf0 \
+    \cf2 private\cf0  BinaryNode<AnyType> findMax( BinaryNode<AnyType> t )\
+    \{\
+        \cf2 if\cf0 ( t != \cf2 null\cf0  ) \{\
+            \cf2 while\cf0 ( t.right != \cf2 null\cf0  ) \{\
+            	count++;\
+                t = t.right;\
+            \}\
+        \}\
+        \cf2 return\cf0  t;\
+    \}\
+\
+    \cf3 /**\
+     * Internal method to find an item in a subtree.\
+     * \cf4 @param\cf3  x is item to search for.\
+     * \cf4 @param\cf3  t the node that roots the subtree.\
+     * \cf4 @return\cf3  node containing the matched item.\
+     */\cf0 \
+    \cf2 private\cf0  \cf2 boolean\cf0  contains( AnyType x, BinaryNode<AnyType> t )\
+    \{\
+        \cf2 if\cf0 ( t == \cf2 null\cf0  )\
+            \cf2 return\cf0  \cf2 false\cf0 ;\
+            \
+        \cf2 int\cf0  compareResult = x.compareTo( t.element );\
+            \
+        \cf2 if\cf0 ( compareResult < \cf5 0\cf0  )\
+            \cf2 return\cf0  contains( x, t.left );\
+        \cf2 else\cf0  \cf2 if\cf0 ( compareResult > \cf5 0\cf0  )\
+            \cf2 return\cf0  contains( x, t.right );\
+        \cf2 else\cf0 \
+            \cf2 return\cf0  \cf2 true\cf0 ;    \cf3 // Match\cf0 \
+    \}\
+\
+    \cf3 /**\
+     * Internal method to print a subtree in sorted order.\
+     * \cf4 @param\cf3  t the node that roots the subtree.\
+     */\cf0 \
+    \cf2 private\cf0  \cf2 void\cf0  printTree( BinaryNode<AnyType> t )\
+    \{\
+        \cf2 if\cf0 ( t != \cf2 null\cf0  )\
+        \{\
+            printTree( t.left );\
+            System.out.println( t.element );\
+            printTree( t.right );\
+        \}\
+    \}\
+\
+    \cf3 /**\
+     * Internal method to compute height of a subtree.\
+     * \cf4 @param\cf3  t the node that roots the subtree.\
+     */\cf0 \
+    \cf2 private\cf0  \cf2 int\cf0  height( BinaryNode<AnyType> t )\
+    \{\
+        \cf2 if\cf0 ( t == \cf2 null\cf0  )\
+            \cf2 return\cf0  \cf5 -1\cf0 ;\
+        \cf2 else\cf0 \
+            \cf2 return\cf0  \cf5 1\cf0  + Math.max( height( t.left ), height( t.right ) );    \
+    \}\
+    \
+  \cf3 /**\
+   * Output all nodes, level by level\
+   * \
+   */\cf0  \
+  \cf2 public\cf0  \cf2 void\cf0  displayTree()\
+  \{\
+      System.out.println(\cf6 "<<< THE TREE CONTAINS:\\n"\cf0 );\
+      displayLevel(root);\
+  \}\
+  \
+  \cf3 /** \
+   * Output all nodes, level by level\
+   * @ param node - the node that roots the current subtree\
+   */\cf0 \
+  \cf2 private\cf0  \cf2 void\cf0  displayLevel(BinaryNode node) \{\
+      \cf2 if\cf0  (node == \cf2 null\cf0 ) \{\
+         System.out.print(\cf6 " - "\cf0 );\
+      \}\
+      \cf2 else\cf0  \{\
+        \cf3 //Queue that holds the nodes on the current level\cf0 \
+        Queue<BinaryNode> thisLevel = \cf2 new\cf0  LinkedList<BinaryNode>();\
+        \cf3 //Queue that holds the nodes on the next level\cf0 \
+        Queue<BinaryNode> nextLevel = \cf2 new\cf0  LinkedList<BinaryNode>(); \
+        \cf3 //put the root on the current level's queue\cf0 \
+        thisLevel.add(node);\
+        \cf2 int\cf0  h = height(root);\
+        \cf2 int\cf0  levelTotal = \cf5 0\cf0 ;  \cf3 //keeps track of the total levels printed so we don't  pass the height and print a billion "null"s\cf0 \
+        \cf2 while\cf0 (!thisLevel.isEmpty()&& (levelTotal<= h))\
+        \{\
+\
+            \cf2 while\cf0  (!thisLevel.isEmpty()) \cf3 // print nodes at current level\cf0 \
+            \{\
+               \cf2 if\cf0  (thisLevel.peek() != \cf2 null\cf0 )\
+               \{\
+                  System.out.print(thisLevel.peek().element + \cf6 " "\cf0 );\
+                  \cf3 // if there is a left pointer , put on next level; if none, put a null\cf0 \
+                  node = thisLevel.peek().left; \cf3 // look at the left pointer of node\cf0 \
+                  nextLevel.add(node); \
+                  node = thisLevel.remove().right; \cf3 // get right pointer and remove node\cf0 \
+                  nextLevel.add(node); \
+               \}\
+               \cf2 else\cf0 \
+               \{\
+                  System.out.print(\cf6 " - "\cf0 );\
+                  nextLevel.add(\cf2 null\cf0 ); \
+                  nextLevel.add(\cf2 null\cf0 );\
+                  thisLevel.remove();\
+               \}\
+            \}  \cf3 // end while (!thisLevel.isEmpty())\cf0 \
+            \cf3 // Moving to the next level, copy nodes to thisLevel so we know to \cf0 \
+            \cf3 // advance level count and line in output\cf0 \
+            \cf2 while\cf0  (!nextLevel.isEmpty())\
+            \{\
+                  thisLevel.add(nextLevel.remove());\
+            \} \cf3 // end while (!nextLevel.isEmpty()\cf0 \
+            System.out.println(); \
+            levelTotal++;\
+        \} \cf3 // end while(!thisLevel.isEmpty()&& (levelTotal<= h))\cf0 \
+      System.out.println(); \cf3 // an extra line feed to separate this printout of from next\cf0 \
+    \}\
+  \}\
+  \
+  \cf3 /**\
+   * timerStart takes a snapshot of the system clock.\
+   * \cf4 @return\cf3  start, a double that represents the system clock when the method was invoked\
+   * \
+   * Note: Credit for this method should go to stackoverflow.com/questions/180158/how-do-i-time-a-methods-execution-in-java\
+   */\cf0 \
+  \cf2 public\cf0  \cf2 double\cf0  time() \{\
+	  \cf3 //Creating a double by doing a cast to the System's own nanoTime() method.\cf0 \
+	  \cf2 double\cf0  time =  System.nanoTime();\
+	  \cf2 return\cf0  time;\
+  \}\
+    \
+    \cf3 // Basic node stored in unbalanced binary search trees\cf0 \
+    \cf2 private\cf0  \cf2 static\cf0  \cf2 class\cf0  BinaryNode<AnyType> \{\
+            \cf3 // Constructors\cf0 \
+        BinaryNode( AnyType theElement )\
+        \{\
+            \cf2 this\cf0 ( theElement, \cf2 null\cf0 , \cf2 null\cf0  );\
+        \}\
+\
+        BinaryNode( AnyType theElement, BinaryNode<AnyType> lt, BinaryNode<AnyType> rt )\
+        \{\
+            element  = theElement;\
+            left     = lt;\
+            right    = rt;\
+        \}\
+\
+        AnyType element;            \cf3 // The data in the node\cf0 \
+        BinaryNode<AnyType> left;   \cf3 // Left child\cf0 \
+        BinaryNode<AnyType> right;  \cf3 // Right child\cf0 \
+    \}\
+\
+\
+      \cf3 /** The tree root. */\cf0 \
+    \cf2 private\cf0  BinaryNode<AnyType> root;\
+    \cf2 static\cf0  \cf2 int\cf0  count = \cf5 0\cf0 ;\
+\
+\
+    \
+    \
+        \cf3 // Test program\cf0 \
+    \cf2 public\cf0  \cf2 static\cf0  \cf2 void\cf0  main( String [ ] args )\
+    \{\
+    	\
+    	\cf3 //First, lets create an array of integers of length 100.\cf0 \
+    	\cf3 //int[] intArray = \{3, 8, 11, 13, 18, 21, 26, 29, 34, 37, 45, 48, 51, 57, 65, 69, 71, 74, 80, 89\}; //FOR TESTING\cf0 \
+    	\cf2 int\cf0 [] intArray = \cf2 new\cf0  \cf2 int\cf0 [\cf5 1000\cf0 ];\
+    	\cf2 for\cf0  (\cf2 int\cf0  i = \cf5 0\cf0 ; i < intArray.length; i++) \{\
+    		\cf3 //Multiplying the random decimals (0 < number < 1) by 100 and rounding them for integers\cf0 \
+    		intArray[i] = Math.round((\cf2 float\cf0 ) (Math.random() * \cf5 100\cf0 ));\
+    	\}\
+    	\cf3 //Sorting the array to print out in order, it gives a better idea of the number distribution\cf0 \
+    	Arrays.sort(intArray);\
+    	\
+    	\
+    	\cf3 //Printing the Array\cf0 \
+    	System.out.println(\cf6 "First, the array goes as follows:"\cf0 );\
+    	\cf2 for\cf0  (\cf2 int\cf0  i = \cf5 0\cf0 ; i < intArray.length; i++ ) \{\
+    		\cf2 if\cf0  (i == intArray.length - \cf5 1\cf0 ) \{\
+        		System.out.print(intArray[i] + \cf6 "\\n\\n"\cf0 );\
+    		\}\
+    		\cf2 else\cf0  \{\
+    			System.out.print(intArray[i] + \cf6 ", "\cf0 );\
+    		\}\
+    	\}\
+}
